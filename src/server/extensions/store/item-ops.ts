@@ -20,7 +20,7 @@ import {
 import { _addRepo } from "./repo-ops";
 import { STORE_TYPE_SPECS } from "./store-types";
 import type { StoreStreamPhase } from "../../../shared/store-stream";
-import { bumpPluginRegistryReload } from "../registry-factory";
+import { ReloadMode, reloadSync } from "./reload-sync";
 import { runStoreExclusive } from "./store-lock";
 import { makeExtID } from "../../utils/extension-id";
 import { resolveChild, resolveRealChild } from "../../utils/paths";
@@ -140,8 +140,7 @@ export async function reloadAfterAction(
   type: ExtensionStoreType,
   bust = true,
 ): Promise<void> {
-  if (bust) bumpPluginRegistryReload();
-  await STORE_TYPE_SPECS[type].reload(bust);
+  await reloadSync(type, bust ? ReloadMode.Bump : ReloadMode.Refresh);
 }
 
 const STORE_METADATA = ["author.json", "screenshots"];

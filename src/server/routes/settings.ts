@@ -15,7 +15,6 @@ import {
   getEditableShortcutFile,
   getShortcutActions,
   getShortcutDisabledStates,
-  reloadShortcutsRegistry,
 } from "../extensions/shortcuts/registry";
 import { makeExtID, slugifyIdPart } from "../utils/extension-id";
 import {
@@ -31,7 +30,8 @@ import {
 } from "../utils/server-settings";
 import { writeSyncedDefaults } from "../utils/synced-settings";
 import { startQueue, stopQueue } from "../indexer/queue";
-import { reloadEngines } from "../extensions/engines/registry";
+import { ReloadMode, reloadSync } from "../extensions/store/reload-sync";
+import { ExtensionStoreType } from "../types";
 import {
   SETTINGS_SCHEMA,
   coerceSetting,
@@ -220,7 +220,7 @@ router.get("/api/settings/general", async (c) => {
 
 const _reloadSearx = async (): Promise<boolean> => {
   try {
-    await reloadEngines();
+    await reloadSync(ExtensionStoreType.Engine, ReloadMode.Bust);
     return true;
   } catch (err) {
     logger.warn("settings", "engine reload after a searx toggle failed", err);
@@ -573,7 +573,7 @@ router.post("/api/settings/shortcuts/source", async (c) => {
     logger.info("settings", `shortcut source overwritten id=${id}`);
   }
   await writeFile(target, body.source, "utf-8");
-  await reloadShortcutsRegistry(true);
+  await reloadSync(ExtensionStoreType.Shortcut, ReloadMode.Bust);
   return c.json({ ok: true, id, overwrite });
 });
 
@@ -592,7 +592,7 @@ router.delete("/api/settings/shortcuts/source/:id", async (c) => {
   } catch (err) {
     logger.warn("settings", `failed to unlink shortcut source id=${id}`, err);
   }
-  await reloadShortcutsRegistry(true);
+  await reloadSync(ExtensionStoreType.Shortcut, ReloadMode.Bust);
   return c.json({ ok: true });
 });
 

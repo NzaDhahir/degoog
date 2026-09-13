@@ -7,6 +7,7 @@ export const INVALIDATE_SCOPE = {
   PLUGIN_SETTINGS: "plugin-settings",
   SERVER_SETTINGS: "server-settings",
   CACHE_CLEAR: "cache-clear",
+  EXTENSIONS: "extensions",
 } as const;
 
 export type InvalidateScope =
@@ -46,6 +47,9 @@ const _kvKey = (namespace: string, key: string): string =>
   `degoog:${_instanceId}:${namespace}:${key}`;
 
 export const isValkeyEnabled = (): boolean => _enabled;
+
+export const isOwnEvent = (payload: InvalidatePayload): boolean =>
+  payload.origin === PROCESS_ORIGIN;
 
 const _loadClient = async (url: string): Promise<ValkeyClient | null> => {
   try {

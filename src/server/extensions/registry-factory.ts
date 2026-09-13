@@ -9,6 +9,7 @@ import { dirname, join } from "path";
 import { pathToFileURL } from "url";
 import { registerDocsDir } from "../utils/extension-docs";
 import { logger } from "../utils/logger";
+import { refreshModules } from "../utils/module-cache";
 import { createMutex } from "../utils/mutex";
 import { makeExtID, dedupeExtID, type ExtensionKind } from "../utils/extension-id";
 export type RegistrySource = "plugin" | "builtin";
@@ -222,6 +223,13 @@ export function createRegistry<T>(opts: RegistryOptions<T>): {
       resolved.map(async (r) => {
         if (!r) return null;
         try {
+          const entryPath = join(registryDir.dir, r.base);
+          const scope = dirname(r.fullPath) === entryPath ? entryPath : r.fullPath;
+          await refreshModules(
+            r.fullPath,
+            scope,
+            bust && registryDir.source !== "builtin",
+          );
           const base = pathToFileURL(r.fullPath).href;
           const url = bust
             ? `${base}?r=${_pluginReloadGeneration}`
