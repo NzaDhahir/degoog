@@ -54,11 +54,15 @@ export const refreshModules = async (
 
   const key = normalizeKey(resolve(entryFile));
   const previous = _fingerprints.get(key);
-  _fingerprints.set(key, current);
 
-  if (!evict || !previous || previous === current) return;
+  if (!previous) {
+    _fingerprints.set(key, current);
+    return;
+  }
+  if (!evict || previous === current) return;
 
   const isDir = resolve(scopePath) !== resolve(entryFile);
   const removed = obliviate(scopePath, isDir);
+  _fingerprints.set(key, current);
   logger.debug(NS, `evicted ${removed} cached modules for ${scopePath}`);
 };

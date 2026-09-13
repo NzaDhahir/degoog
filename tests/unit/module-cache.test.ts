@@ -63,6 +63,18 @@ describe("utils/module-cache", () => {
     expect(mod.v).toBe("old");
   });
 
+  test("evicts on the first eviction pass after a skipped refresh", async () => {
+    await write("deferred/index.ts", "export const v = 'old';");
+    await load("deferred/index.ts", "deferred", true);
+
+    await write("deferred/index.ts", "export const v = 'new-longer';");
+    const skipped = await load("deferred/index.ts", "deferred", false);
+    expect(skipped.v).toBe("old");
+
+    const evicted = await load("deferred/index.ts", "deferred", true);
+    expect(evicted.v).toBe("new-longer");
+  });
+
   test("only evicts the changed flat file, not its siblings", async () => {
     await write("flat/one.ts", "export const widget = { v: 'one-old' };");
     await write("flat/two.ts", "export const widget = { v: 'two' };");

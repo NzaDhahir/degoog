@@ -321,7 +321,7 @@ export function openModal(ext: ExtensionMeta): void {
 
   if (overlay) overlay.style.display = "flex";
   const firstFocusable = bodyEl?.querySelector<HTMLElement>(
-    "select, input, textarea",
+    "select, input:not([type='hidden']), textarea, button",
   );
   firstFocusable?.focus();
 }

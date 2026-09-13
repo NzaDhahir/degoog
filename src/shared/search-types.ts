@@ -95,6 +95,10 @@ export const parseTypeList = (
   return [...seen];
 };
 
-export const slotRunsOn = (allowed: string[], type: string): boolean =>
-  !isImageSearchType(type) &&
-  allowed.includes(resolveBuiltinSearchType(type) || DEFAULT_SEARCH_TYPE);
+export const slotRunsOn = (allowed: string[], type: string): boolean => {
+  if (isImageSearchType(type)) return false;
+  const wanted = resolveBuiltinSearchType(type) || DEFAULT_SEARCH_TYPE;
+  return allowed.some(
+    (allowedType) => resolveBuiltinSearchType(allowedType) === wanted,
+  );
+};

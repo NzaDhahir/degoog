@@ -68,7 +68,8 @@ const _loadClient = async (url: string): Promise<ValkeyClient | null> => {
 };
 
 const _fallBackToDisk = async (): Promise<void> => {
-  await startDiskBus(_notifyRemote);
+  const started = await startDiskBus(_notifyRemote);
+  if (!started) _initPromise = null;
 };
 
 export const initValkey = async (instanceId: string): Promise<void> => {

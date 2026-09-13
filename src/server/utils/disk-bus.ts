@@ -73,10 +73,6 @@ const freshEvents = (dir: string): PendingEvent[] => {
   return pending.sort((a, b) => a.event.at - b.event.at || a.event.seq - b.event.seq);
 };
 
-const markSeen = (dir: string): void => {
-  for (const { name, event } of freshEvents(dir)) _lastSeen.set(name, event.id);
-};
-
 const drainBus = (dir: string, listener: BusListener): void => {
   for (const { name, event } of freshEvents(dir)) {
     _lastSeen.set(name, event.id);
@@ -90,12 +86,14 @@ export const startDiskBus = async (listener: BusListener): Promise<boolean> => {
   const dir = busDir();
   try {
     await mkdir(dir, { recursive: true });
-    markSeen(dir);
+    const preexisting = freshEvents(dir);
     _watcher = watch(dir, () => drainBus(dir, listener));
     _watcher.on("error", (err) =>
       logger.error(NS, "bus watcher failed, cross-process sync stopped", err),
     );
+    for (const { name, event } of preexisting) _lastSeen.set(name, event.id);
     _dir = dir;
+    drainBus(dir, listener);
     logger.info(NS, `cross-process sync watching ${dir}`);
     return true;
   } catch (err) {

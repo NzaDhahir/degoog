@@ -8,16 +8,19 @@ import type {
   EngineContext,
 } from "./search";
 import { SlotPanelPosition } from "../../shared/search-types";
-import type {
-  FieldOptionsResult,
-  FieldOptionsSource,
-} from "../../shared/field-options";
+import type { FieldOptionsResult } from "../../shared/field-options";
+import type { SettingField } from "../../shared/setting-field";
 
 export type {
   FieldOption,
   FieldOptionsResult,
   FieldOptionsSource,
 } from "../../shared/field-options";
+
+export type {
+  SettingFieldType,
+  SettingField,
+} from "../../shared/setting-field";
 
 export type TranslationVars = string | number | boolean;
 export type TranslationRecord = {
@@ -55,51 +58,11 @@ export enum ExtensionStoreType {
   Shortcut = "shortcut",
 }
 
-
 export type GetFieldOptions = (
   key: string,
   values: Record<string, SettingValue>,
   signal?: AbortSignal,
 ) => Promise<FieldOptionsResult> | FieldOptionsResult;
-
-export interface SettingField {
-  key: string;
-  label: string;
-  type:
-  | "text"
-  | "number"
-  | "password"
-  | "url"
-  | "toggle"
-  | "textarea"
-  | "select"
-  | "multiselect"
-  | "urllist"
-  | "list"
-  | "hex"
-  | "range"
-  | "file"
-  | "info";
-  required?: boolean;
-  placeholder?: string;
-  description?: string;
-  secret?: boolean;
-  options?: string[];
-  optionLabels?: string[];
-  default?: string;
-  advanced?: boolean;
-  visibleWhen?: { key: string; equals: string };
-  itemSchema?: SettingField[];
-  addLabel?: string;
-  fieldset?: string;
-  min?: string;
-  max?: string;
-  step?: string;
-  accept?: string;
-  maxSizeKb?: string;
-  minSizeKb?: string;
-  optionsFrom?: FieldOptionsSource;
-}
 
 export interface PluginManifest {
   id: string;

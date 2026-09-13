@@ -59,6 +59,14 @@ describe("slotRunsOn", () => {
     expect(slotRunsOn(["news"], "engine:news")).toBe(true);
   });
 
+  test("resolves prefixed configured values before matching", () => {
+    expect(slotRunsOn(["tab:engine:news"], "news")).toBe(true);
+    expect(slotRunsOn(["engine:news"], "news")).toBe(true);
+    expect(slotRunsOn(["tab:engine:news"], "tab:engine:news")).toBe(true);
+    expect(slotRunsOn(["engine:news"], "tab:engine:news")).toBe(true);
+    expect(slotRunsOn(["tab:engine:videos"], "news")).toBe(false);
+  });
+
   test("never runs on images even when listed", () => {
     expect(slotRunsOn(["images"], "images")).toBe(false);
     expect(slotRunsOn(["web", "images"], "tab:engine:images")).toBe(false);

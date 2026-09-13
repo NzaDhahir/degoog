@@ -11,6 +11,7 @@ import type { SearchResponse } from "../../types";
 import { clearSlotPanels, renderResults } from "../../modules/renderer/render";
 import { teardownInfinite } from "../../modules/renderer/infinite-scroll";
 import {
+  abortGlancePanels,
   abortSlotFetch,
   fetchGlancePanels,
   fetchSlotPanels,
@@ -84,6 +85,7 @@ export async function goToPage(pageNum: number): Promise<void> {
     }
     const metaText = `About ${state.currentResults.length} results - Page ${state.currentPage}`;
     setResultsMeta(metaText);
+    abortGlancePanels();
     clearSlotPanels();
     const isImageType = isImageSearchType(state.currentType);
     if (state.currentPage === 1 && !isImageType) {
