@@ -1,5 +1,6 @@
 import { randomBytes } from "crypto";
 import { logger } from "./logger";
+import { startDiskBus, stopDiskBus, writeBusEvent } from "./disk-bus";
 
 export const VALKEY_URL_ENV = "DEGOOG_VALKEY_URL";
 
@@ -8,6 +9,7 @@ export const INVALIDATE_SCOPE = {
   SERVER_SETTINGS: "server-settings",
   CACHE_CLEAR: "cache-clear",
   EXTENSIONS: "extensions",
+  EXTENSION_SETTINGS: "extension-settings",
 } as const;
 
 export type InvalidateScope =
@@ -65,17 +67,24 @@ const _loadClient = async (url: string): Promise<ValkeyClient | null> => {
   }
 };
 
+const _fallBackToDisk = async (): Promise<void> => {
+  await startDiskBus(_notifyRemote);
+};
+
 export const initValkey = async (instanceId: string): Promise<void> => {
   if (_initPromise) return _initPromise;
   const url = process.env[VALKEY_URL_ENV];
   if (!url) {
-    _initPromise = Promise.resolve();
+    _initPromise = _fallBackToDisk();
     return _initPromise;
   }
 
   _initPromise = (async () => {
     const client = await _loadClient(url);
-    if (!client) return;
+    if (!client) {
+      await _fallBackToDisk();
+      return;
+    }
 
     _instanceId = instanceId;
     _channel = `degoog:${instanceId}:invalidate`;
@@ -110,6 +119,7 @@ export const initValkey = async (instanceId: string): Promise<void> => {
       _publisher = null;
       _subscriber = null;
       _channel = null;
+      await _fallBackToDisk();
     }
   })();
 
@@ -126,6 +136,24 @@ const _notifyLocal = (payload: InvalidatePayload): void => {
   }
 };
 
+const SCOPES = new Set<string>(Object.values(INVALIDATE_SCOPE));
+
+const isPayload = (value: unknown): value is InvalidatePayload => {
+  if (typeof value !== "object" || value === null) return false;
+  const payload = value as Partial<InvalidatePayload>;
+  return (
+    typeof payload.origin === "string" &&
+    typeof payload.scope === "string" &&
+    SCOPES.has(payload.scope) &&
+    (payload.key === undefined || typeof payload.key === "string")
+  );
+};
+
+const _notifyRemote = (value: unknown): void => {
+  if (!isPayload(value) || isOwnEvent(value)) return;
+  _notifyLocal(value);
+};
+
 export const publishInvalidate = async (
   scope: InvalidateScope,
   key?: string,
@@ -133,7 +161,10 @@ export const publishInvalidate = async (
   const payload: InvalidatePayload = { scope, key, origin: PROCESS_ORIGIN };
   const wire = JSON.stringify(payload);
   _notifyLocal(payload);
-  if (!_enabled || !_publisher || !_channel) return;
+  if (!_enabled || !_publisher || !_channel) {
+    await writeBusEvent(scope, key, payload);
+    return;
+  }
   try {
     await _publisher.publish(_channel, wire);
   } catch (err) {
@@ -217,7 +248,9 @@ export const closeValkey = async (): Promise<void> => {
   } catch (err) {
     logger.error(NS, "closeValkey error", err);
   }
+  stopDiskBus();
   _publisher = null;
   _subscriber = null;
   _enabled = false;
+  _initPromise = null;
 };

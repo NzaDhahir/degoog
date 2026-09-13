@@ -37,6 +37,8 @@ export const resolveRealChild = (
 const _dataDir = (): string =>
   process.env.DEGOOG_DATA_DIR ?? join(process.cwd(), "data");
 
+export const busDir = (): string => join(_dataDir(), "bus");
+
 export const pluginsDir = (): string =>
   process.env.DEGOOG_PLUGINS_DIR ?? join(_dataDir(), "plugins");
 

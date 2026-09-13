@@ -35,8 +35,8 @@ import { logger } from "../utils/logger";
 import {
   findExtensionMeta,
   findOptionsProvider,
-  resolveExtension,
 } from "../extensions/resolve";
+import { syncExtSettings } from "../extensions/settings-sync";
 import {
   ExtensionStoreType,
   type ExtensionMeta,
@@ -343,21 +343,7 @@ router.post("/api/extensions/:id/settings", async (c) => {
     }
   }
 
-  const resolved = resolveExtension(id);
-  resolved.engine?.configure?.(merged);
-  resolved.command?.configure?.(merged);
-  resolved.slot?.configure?.(merged);
-  resolved.interceptor?.configure?.(merged);
-  resolved.tab?.configure?.(merged);
-  resolved.transport?.configure?.(merged);
-  resolved.autocomplete?.configure?.(merged);
-
-  if (merged.priority !== undefined) {
-    const parsed = parseInt(String(merged.priority), 10);
-    const priority = isNaN(parsed) ? 0 : parsed;
-    if (resolved.slot) resolved.slot.priority = priority;
-    if (resolved.interceptor) resolved.interceptor.priority = priority;
-  }
+  await syncExtSettings(id, merged);
 
   return c.json({ ok: true });
 });

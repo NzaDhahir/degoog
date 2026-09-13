@@ -26,6 +26,7 @@ import { initServerKey } from "./utils/server-key";
 import { logSettingsPasswordStatus } from "./routes/settings-auth";
 import { initValkey } from "./utils/cache-valkey";
 import { openBifrost } from "./extensions/store/reload-sync";
+import { openPalantir } from "./extensions/settings-sync";
 import { getInstanceId, getInstanceSettings } from "./utils/server-settings";
 import { asBoolean } from "./utils/plugin-settings";
 import { runMigrations } from "./migrations";
@@ -143,6 +144,7 @@ ${ANSI_GRAY}██████████████████████�
 await runMigrations();
 await initValkey(await getInstanceId());
 openBifrost();
+openPalantir();
 
 const initExtensionRegistries = async (): Promise<void> => {
   await Promise.all([
