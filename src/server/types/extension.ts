@@ -1,5 +1,6 @@
 import type { CreateCache, UseCache } from "../utils/cache";
 import type { SettingValue } from "../utils/plugin-settings";
+import type { ThreatLevel } from "../utils/sentinel";
 import type {
   SearchResult,
   ScoredResult,
@@ -400,7 +401,7 @@ export interface EngineRunReport {
   page: number;
   time: number;
   resultCount: number;
-  status: string;
+  status: ThreatLevel;
   errorReason?: string;
   httpStatus?: number;
   cached: boolean;

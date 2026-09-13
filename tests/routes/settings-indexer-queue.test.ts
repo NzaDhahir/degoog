@@ -75,6 +75,21 @@ describe("POST /api/settings/field indexer queue", () => {
     expect(settings.degoogIndexerEnabled).toBe(true);
   });
 
+  test("flags a failed queue start on the general save", async () => {
+    startFails = true;
+    const res = await router.request(
+      new Request("http://localhost/api/settings/general", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ degoogIndexerEnabled: "true" }),
+      }),
+    );
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ ok: true, indexerStartFailed: true });
+    const settings = await getInstanceSettings();
+    expect(settings.degoogIndexerEnabled).toBe(true);
+  });
+
   test("stays quiet when the queue starts", async () => {
     startFails = false;
     const res = await saveField("degoogIndexerEnabled", "true");

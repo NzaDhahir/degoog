@@ -318,7 +318,7 @@ const _tellObservers = (
     page: scope.page,
     time: timing.time,
     resultCount: timing.resultCount,
-    status: timing.status ?? THREAT_LEVEL.OK,
+    status: (timing.status as ThreatLevel | undefined) ?? THREAT_LEVEL.OK,
     errorReason: timing.errorReason,
     httpStatus: timing.httpStatus,
     cached,
