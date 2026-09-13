@@ -494,11 +494,11 @@
 
     &--on {
       background: $primary;
-      color: var(--bg);
+      color: var(--text-primary);
 
       &:hover {
         background: $primary-hover;
-        color: var(--bg);
+        color: var(--text-primary);
       }
     }
   }

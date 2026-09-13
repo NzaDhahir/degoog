@@ -9,8 +9,7 @@ const CHIP_ON_CLASS = "ext-field-multiselect-chip--on";
 
 const _chosen = (field: SettingField, ext: ExtensionMeta): string[] => {
   const stored = ext.settings[field.key];
-  const picked = parseTypeList(stored);
-  return picked.length > 0 ? picked : parseTypeList(field.default);
+  return parseTypeList(stored === undefined ? field.default : stored);
 };
 
 export const renderMultiField = (

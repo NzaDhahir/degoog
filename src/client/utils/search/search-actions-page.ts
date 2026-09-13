@@ -10,7 +10,11 @@ import { getBase } from "../base-url";
 import type { SearchResponse } from "../../types";
 import { clearSlotPanels, renderResults } from "../../modules/renderer/render";
 import { teardownInfinite } from "../../modules/renderer/infinite-scroll";
-import { fetchGlancePanels, fetchSlotPanels } from "../search-utils";
+import {
+  abortSlotFetch,
+  fetchGlancePanels,
+  fetchSlotPanels,
+} from "../search-utils";
 import { declaredPages, setResultsMeta } from "../search-helpers";
 
 export async function goToPage(pageNum: number): Promise<void> {
@@ -86,6 +90,7 @@ export async function goToPage(pageNum: number): Promise<void> {
       void fetchGlancePanels(state.currentQuery, data.results);
     }
     if (!isImageType) {
+      abortSlotFetch();
       void fetchSlotPanels(state.currentQuery, state.currentResults);
     }
     renderResults(state.currentResults);

@@ -215,9 +215,9 @@ export const getSlotExtensionMeta = async (
         : slot.position;
     }
 
-    const storedTypes = parseTypeList(raw[SLOT_SEARCH_TYPES_KEY]);
+    const storedTypes = raw[SLOT_SEARCH_TYPES_KEY];
     settings[SLOT_SEARCH_TYPES_KEY] = (
-      storedTypes.length > 0 ? storedTypes : slotDefaults
+      storedTypes === undefined ? slotDefaults : parseTypeList(storedTypes)
     ).filter((type) => typeOptions.includes(type));
 
     const { exists: docsExist } = await extensionReadmeExists(id);

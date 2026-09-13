@@ -178,6 +178,7 @@ const _advancedFieldDiffersFromDefault = (
   }
 
   if (field.type === "multiselect") {
+    if (raw === undefined) return false;
     const picked = Array.isArray(raw) ? raw : String(raw ?? "").split(",");
     const chosen = picked.map((v) => v.trim()).filter(Boolean);
     const def = defaultStr.split(",").map((v) => v.trim()).filter(Boolean);

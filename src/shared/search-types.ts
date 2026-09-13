@@ -90,7 +90,7 @@ export const parseTypeList = (
   const seen = new Set<string>();
   for (const entry of entries) {
     const type = String(entry).trim();
-    if (type && type !== IMAGE_SEARCH_TYPE) seen.add(type);
+    if (type && !isImageSearchType(type)) seen.add(type);
   }
   return [...seen];
 };

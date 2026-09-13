@@ -34,6 +34,14 @@ describe("parseTypeList", () => {
     expect(parseTypeList("images")).toEqual([]);
   });
 
+  test("drops prefixed image types but keeps other prefixed values as-is", () => {
+    expect(parseTypeList(["tab:engine:images", "engine:images"])).toEqual([]);
+    expect(parseTypeList(["tab:engine:news", "engine:videos"])).toEqual([
+      "tab:engine:news",
+      "engine:videos",
+    ]);
+  });
+
   test("returns empty for unset or boolean values", () => {
     expect(parseTypeList(undefined)).toEqual([]);
     expect(parseTypeList(true)).toEqual([]);

@@ -16,8 +16,8 @@ export const slotTypes = async (
   settingsId: string,
 ): Promise<string[]> => {
   const raw = await getSettings(settingsId);
-  const chosen = parseTypeList(raw[SLOT_SEARCH_TYPES_KEY]);
-  return chosen.length > 0 ? chosen : baseSlotTypes(slot);
+  const stored = raw[SLOT_SEARCH_TYPES_KEY];
+  return stored === undefined ? baseSlotTypes(slot) : parseTypeList(stored);
 };
 
 export const slotShowsOn = async (

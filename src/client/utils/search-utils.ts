@@ -31,11 +31,15 @@ export const abortGlancePanels = (): void => {
   }
 };
 
-export const abortSlotPanels = (): void => {
+export const abortSlotFetch = (): void => {
   if (slotsAbortController) {
     slotsAbortController.abort();
     slotsAbortController = null;
   }
+};
+
+export const abortSlotPanels = (): void => {
+  abortSlotFetch();
   independentKnowledgePanels = [];
 };
 
