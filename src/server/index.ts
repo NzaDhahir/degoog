@@ -126,7 +126,7 @@ const ANSI_GRAY = _ansi("\x1b[90m");
 
 console.log(
   `
-   ${ANSI_BLUE}    ░██ ${ANSI_RESET} degoog ${ANSI_GRAY}${pkg.version}
+   ${ANSI_BLUE}    ░██ ${ANSI_RESET} notgoogle (degoog) ${ANSI_GRAY}${pkg.version}
   ${ANSI_BLUE}     ░██ ${ANSI_RESET} Running on ${ANSI_GRAY}${listenUrl} ${ANSI_RESET}${"           ".repeat(5)}\n` +
   `${ANSI_BLUE}       ░██ ${ANSI_RESET}${"           ".repeat(5)}\n` +
   `${ANSI_BLUE} ░████████ ${ANSI_RED} ░███████  ${ANSI_YELLOW} ░████████ ${ANSI_BLUE} ░███████  ${ANSI_GREEN} ░███████  ${ANSI_RED} ░████████ ${ANSI_RESET}\n` +
